@@ -1,0 +1,140 @@
+---
+title: "Descriptive Analysis on MOOCs Dataset"
+author: "Ming-Chen Lu (mingchlu@umich.edu)"
+date: "`r format.Date(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: yes
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, 
+                      engine.path = '/Users/Amy/anaconda3/bin/python')
+
+# Library
+library(reticulate)
+use_virtualenv(virtualenv = "r-reticulate")
+```
+
+# **Introduction**
+Since the lanuching of first 17 HarvardX and MITx courses on the edX platform in 2012, enthusiastic learners from all over the world have benefited and satisfied their thirst for knowedgle from this online learning platforms. After discovering that Harvard released the data of first year open online courses to public, I was curious about the impact of open online courses made to users and decided to get my hands dirty by playing the data. 
+
+# **Data**
+The data comes from [HarvardX Person-Course Academic Year 2013 De-Identified dataset, version 3.0](https://doi.org/10.7910/DVN/26147) provided by Harvard Dataverse. According to the dataset description, it comprises of de-identified data from the first year (Academic Year 2013: Fall 2012, Spring 2013, and Summer 2013) of HarvardX courses on the edX platform. The data are aggregate records, and each record represents one individual's activity in one edX course.
+
+# **Methods**
+The project applied a descriptive methodology to explore users behavior of open online courses based on the dataset provided by Harvard Dataverse. I primarily used graphs and plots to grasp the whole picture of the dataset.
+
+# **Analysis**
+The data contains five courses: The Ancient Greek Hero (CB22x), Introduction to Computer Science I (CS50x), Justice (ER22x), Health in Numbers: Quantitative Methods in Clinical & Public Health Research (PH207x), and Human Health and Global Environmental Change (PH278x). We first looked at the geographical distribution of registrants. The below plot shows that United States has the most registrant (28.91%), followed by India (8.84%) and United Kingdom (3.33%). It's also interesting to see that registrants came from five different continents of the world.
+
+```{python 1}
+# Set up: ----------------------------------------------------------------------
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter
+import seaborn as sns
+plt.style.use('ggplot')
+
+# Read in the data: ------------------------------------------------------------
+file = pd.read_csv("HXPC13_DI_v3_11-13-2019.csv")
+
+# Data Preparation: ------------------------------------------------------------
+# Split the course_id and delete roles showing all NAs
+temp = file["course_id"].str.split("/", n = 2, expand = True)
+file["institution"] = temp[0]
+file["course"] = temp[1]
+file["semester"] = temp[2]
+file.drop(columns = ["course_id", "roles"], inplace = True)
+
+# Geographical distribution of registrants: ------------------------------------
+regions = pd.DataFrame(file.groupby("final_cc_cname_DI")['userid_DI']
+                       .nunique(["userid_DI"])
+                       .sort_values(ascending = False))
+regions['pct'] =  (regions.values / regions.values.sum())*100
+regions = regions[~regions.index.str.contains('Other')]
+
+# Plot
+plt.figure(figsize=(10, 8))
+plt.title("Top 25 countries counted by percentage of registrants for HarvardX.")
+bplot = sns.barplot(x=regions['pct'], y=regions.index)
+bplot.set_xlabel('Percentage of Registration')
+bplot.set_ylabel('')
+for p in bplot.patches:
+    width = p.get_width()
+    bplot.text(width, p.get_y() + p.get_height()/2. + 0.2,
+               '{:1.2f}'.format(width),
+               ha="left")
+```
+
+Next, let's look the activity statistics for each course. The variables *viewed*, *explored*, and *certified* represent person who accessed the coursewar tab, person who accessed at least half of the chapters in the courseware, and person who earned a certificate respectively. All are binary variables (0/1). By observing the bar plot, among all registrants, all courses had at least half of the viewers except the course "PH278x". However, the percentage of registrants accessing at least half of the course or earning the certificate were below 10%, except the course "PH207x". My guesses for this phenomenon are that people lack motivation to keep up the course or many people watched some of the chapters to suit their need, and both causing the high drop out rate.
+
+```{python 2}
+# Activity Statistics: ---------------------------------------------------------
+course = pd.pivot_table(file, index = ["course"], 
+                         values = ["viewed", "explored", "certified"],
+                         aggfunc = np.sum)
+
+# compute the percentage
+cnts = file.groupby(["course"]).size()
+course['Certified'] = (course['certified'].values / cnts)*100
+course['Explored'] = (course['explored'].values / cnts)*100
+course['Viewed'] = (course['viewed'].values / cnts)*100
+
+# plot
+p1 = course.iloc[:,3:].plot.bar(stacked=True, figsize=(7,5), width = 0.4)
+#p1.set_ylim([0,100])
+p1.yaxis.set_major_formatter(PercentFormatter())
+p1.legend(loc = 1)
+plt.title('Percentage of Registrants by Course')
+#plt.xticks(rotation = 45)
+plt.show()
+```
+
+The last graph shows the percentage of certificate earners with different levels of education. It appears that the majority of certificate earners are ones with bachelor's or master's degree.
+
+```{python 3}
+# Explore users' learning activity with different educational levels: -----------
+# remove the internally inconsistent records
+file = file[file['incomplete_flag'] != 1]
+
+# Extract key columns
+df = file[['course', 'LoE_DI', 'explored', 'certified']]
+df = df.dropna(axis = 0)
+
+# Reorder LoE_DI
+df['LoE_DI'] = ( df['LoE_DI'].astype('category').
+                cat.reorder_categories(['Less than Secondary', 'Secondary', 
+                                        "Bachelor's", "Master's", 'Doctorate']) )
+
+# Percentage of users' educational level by course
+edu = df.groupby(['course', 'LoE_DI']).sum()
+edu = edu.groupby(level=0).apply(lambda x: 100 * x / x.sum())
+edu = edu.reset_index()
+
+# Plots: --------------------------------------------------------------------------
+# prepare data
+pivot_edu = edu.pivot(index = 'course', columns = 'LoE_DI', 
+                      values = ['explored', 'certified'])
+
+# Stacked bar plot - Certified
+p3 = pivot_edu['certified'].plot.bar(stacked=True, figsize=(7,5), width = 0.4)
+
+#p3.set_ylim([0,100])
+p3.yaxis.set_major_formatter(PercentFormatter())
+p3.legend(loc = 'center right', bbox_to_anchor=(1.28, 0.5))
+#plt.xticks(rotation=45)
+plt.title('Distribution of Certified Educational Levels by Course')
+plt.show()
+```
+
+# **Summary**
+From the quick analysis of the data, the most interesting question emerged to me is how users with different educational level perform in online open courses. The question affects the course design and teaching methods that could possibly give learners a whole-new learning experiences. In order to examine the relationship between them, linear or regression model can be considered in the future.
+
+# **References**
+Pandas 0.15.2 documentation: https://pandas.pydata.org/pandas-docs/version/0.15/tutorials.html
+
+Person Course Documentation: https://dataverse.harvard.edu/file.xhtml?persistentId=doi:10.7910/DVN/26147/FD5IES&version=11.2
+
