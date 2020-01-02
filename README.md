@@ -1,9 +1,9 @@
 # Descriptive Analysis on MOOCs Dataset
 
 ## Navigation
-- Python code of the analysis: [analysis.ipynb](./Descriptive_MOOCs/analysis.ipynb)
-- Report in .html and .Rmd files: [analysis_report.html](./Descriptive_MOOCs/analysis_report.html), [analysis_report.Rmd](./Descriptive_MOOCs/analysis_report.Rmd)
-- Dataset: [HXPC13_DI_v3_11-13-2019.csv](./Descriptive_MOOCs/HXPC13_DI_v3_11-13-2019.csv)
+- Python code of the analysis: [analysis.ipynb](https://github.com/mclu/Descriptive_MOOCs/blob/master/analysis.ipynb)
+- Report in .html and .Rmd files: [analysis_report.html](https://github.com/mclu/Descriptive_MOOCs/blob/master/analysis_report.html), [analysis_report.Rmd](https://github.com/mclu/Descriptive_MOOCs/blob/master/analysis_report.Rmd)
+- Dataset: [HXPC13_DI_v3_11-13-2019.csv](https://doi.org/10.7910/DVN/26147)
 
 ## Overview
 After Harvard released Massive Online Open Course dataset to public, I was curious about the impact of open online courses made to users. This project hereby applied the descriptive methodology to explore users behavior of open online courses using graphs and plots.
