@@ -1,5 +1,5 @@
 ---
-title: "Descriptive Analysis on MOOCs Dataset"
+title: "Descriptive Analysis of MOOCs Dataset"
 author: "Ming-Chen Lu (mingchlu@umich.edu)"
 date: "`r format.Date(Sys.Date(), '%B %d, %Y')`"
 output: 
@@ -18,16 +18,16 @@ use_virtualenv(virtualenv = "r-reticulate")
 ```
 
 # **Introduction**
-Since the lanuching of first 17 HarvardX and MITx courses on the edX platform in 2012, enthusiastic learners from all over the world have benefited and satisfied their thirst for knowedgle from this online learning platforms. After discovering that Harvard released the data of first year open online courses to public, I was curious about the impact of open online courses made to users and decided to get my hands dirty by playing the data. 
+Since the launching of the first 17 HarvardX and MITx courses on the edX platform in 2012, enthusiastic learners from all over the world have benefited and satisfied their thirst for knowledge from these online learning platforms. After discovering that Harvard released the data of the first year open online courses to the public, I was curious about the impact of open online courses made to users and decided to get my hands dirty by playing the data. 
 
 # **Data**
 The data comes from [HarvardX Person-Course Academic Year 2013 De-Identified dataset, version 3.0](https://doi.org/10.7910/DVN/26147) provided by Harvard Dataverse. According to the dataset description, it comprises of de-identified data from the first year (Academic Year 2013: Fall 2012, Spring 2013, and Summer 2013) of HarvardX courses on the edX platform. The data are aggregate records, and each record represents one individual's activity in one edX course.
 
 # **Methods**
-The project applied a descriptive methodology to explore users behavior of open online courses based on the dataset provided by Harvard Dataverse. I primarily used graphs and plots to grasp the whole picture of the dataset.
+The project applied a descriptive methodology to explore users' behavior of open online courses based on the dataset provided by Harvard Dataverse. I primarily used graphs and plots to grasp the whole picture of the dataset.
 
 # **Analysis**
-The data contains five courses: The Ancient Greek Hero (CB22x), Introduction to Computer Science I (CS50x), Justice (ER22x), Health in Numbers: Quantitative Methods in Clinical & Public Health Research (PH207x), and Human Health and Global Environmental Change (PH278x). We first looked at the geographical distribution of registrants. The below plot shows that United States has the most registrant (28.91%), followed by India (8.84%) and United Kingdom (3.33%). It's also interesting to see that registrants came from five different continents of the world.
+The data contains five courses: The Ancient Greek Hero (CB22x), Introduction to Computer Science I (CS50x), Justice (ER22x), Health in Numbers: Quantitative Methods in Clinical & Public Health Research (PH207x), and Human Health and Global Environmental Change (PH278x). We first looked at the geographical distribution of registrants. The below plot shows that the United States has the most registrant (28.91%), followed by India (8.84%) and United Kingdom (3.33%). It's also interesting to see that registrants came from five different continents of the world.
 
 ```{python 1}
 # Set up: ----------------------------------------------------------------------
@@ -69,7 +69,7 @@ for p in bplot.patches:
                ha="left")
 ```
 
-Next, let's look the activity statistics for each course. The variables *viewed*, *explored*, and *certified* represent person who accessed the coursewar tab, person who accessed at least half of the chapters in the courseware, and person who earned a certificate respectively. All are binary variables (0/1). By observing the bar plot, among all registrants, all courses had at least half of the viewers except the course "PH278x". However, the percentage of registrants accessing at least half of the course or earning the certificate were below 10%, except the course "PH207x". My guesses for this phenomenon are that people lack motivation to keep up the course or many people watched some of the chapters to suit their need, and both causing the high drop out rate.
+Next, let's look at the activity statistics for each course. The variables *viewed*, *explored*, and *certified* represent the person who accessed the courseware tab, the person who accessed at least half of the chapters in the courseware, and the person who earned a certificate respectively. All are binary variables (0/1). By observing the bar plot, among all registrants, all courses had at least half of the viewers except the course "PH278x". However, the percentage of registrants accessing at least half of the course or earning the certificate was below 10%, except the course "PH207x". My guesses for this phenomenon are that people lack the motivation to keep up the course or many people watched some of the chapters to suit their needs, and both causing the high drop out rate.
 
 ```{python 2}
 # Activity Statistics: ---------------------------------------------------------
@@ -131,7 +131,7 @@ plt.show()
 ```
 
 # **Summary**
-From the quick analysis of the data, the most interesting question emerged to me is how users with different educational level perform in online open courses. The question affects the course design and teaching methods that could possibly give learners a whole-new learning experiences. In order to examine the relationship between them, linear or regression model can be considered in the future.
+From the quick analysis of the data, the most interesting question emerged to me is how users with different educational level perform in online open courses. The question affects the course design and teaching methods that could give learners whole-new learning experiences. To examine the relationship between them, a linear or regression model can be considered in the future.
 
 # **References**
 Pandas 0.15.2 documentation: https://pandas.pydata.org/pandas-docs/version/0.15/tutorials.html
